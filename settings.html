@@ -1,0 +1,50 @@
+<div id="yrr_settings" class="extension_container">
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b>Yezi Reasoning Runtime</b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+            <label class="checkbox_label" for="yrr_enabled">
+                <input id="yrr_enabled" type="checkbox">
+                <span>Enable independent planning before Chat Completion requests</span>
+            </label>
+
+            <label for="yrr_base_url">OpenAI-compatible base URL</label>
+            <input id="yrr_base_url" class="text_pole" type="url" placeholder="https://api.openai.com/v1">
+
+            <label for="yrr_model">Planner model</label>
+            <input id="yrr_model" class="text_pole" type="text" placeholder="Required">
+
+            <div class="yrr_grid">
+                <label for="yrr_max_tokens">Max output tokens
+                    <input id="yrr_max_tokens" class="text_pole" type="number" min="64" max="8192" step="1">
+                </label>
+                <label for="yrr_temperature">Temperature
+                    <input id="yrr_temperature" class="text_pole" type="number" min="0" max="2" step="0.1">
+                </label>
+                <label for="yrr_timeout_ms">Timeout (ms)
+                    <input id="yrr_timeout_ms" class="text_pole" type="number" min="1000" max="120000" step="1000">
+                </label>
+                <label for="yrr_retry_count">Retries
+                    <input id="yrr_retry_count" class="text_pole" type="number" min="0" max="3" step="1">
+                </label>
+            </div>
+
+            <label class="checkbox_label" for="yrr_structured_output">
+                <input id="yrr_structured_output" type="checkbox">
+                <span>Request JSON object mode from the planner provider</span>
+            </label>
+
+            <div class="yrr_status_row">
+                <button id="yrr_check_plugin" class="menu_button" type="button">Check server plugin</button>
+                <span id="yrr_status" data-kind="neutral">Not checked.</span>
+            </div>
+
+            <small>
+                The API key is read only by the server plugin from
+                <code>SILLYTAVERN_REASONING_RUNTIME_API_KEY</code> and is never stored in extension settings.
+            </small>
+        </div>
+    </div>
+</div>

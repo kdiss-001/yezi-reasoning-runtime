@@ -1,0 +1,41 @@
+#yrr_settings .inline-drawer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+#yrr_settings .yrr_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+}
+
+#yrr_settings .yrr_grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+#yrr_settings .yrr_status_row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#yrr_status[data-kind='ok'] {
+    color: var(--SmartThemeQuoteColor);
+}
+
+#yrr_status[data-kind='warning'] {
+    color: var(--warning-color, #d9a441);
+}
+
+#yrr_status[data-kind='error'] {
+    color: var(--error-color, #d45d5d);
+}
+
+@media (max-width: 700px) {
+    #yrr_settings .yrr_grid {
+        grid-template-columns: 1fr;
+    }
+}

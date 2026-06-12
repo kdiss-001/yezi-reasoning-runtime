@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+coverage/
+*.log
+secrets.json
+runtime-data/
+planner-cache/
+
+# Local research material and third-party presets are intentionally not published.
+references/
+双人成行*.json
+
+# Local editor and operating-system files.
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
