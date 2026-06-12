@@ -37,6 +37,23 @@ Inference: memory text injected through normal extension prompts is included in 
 
 Inference: implementing the planner by casually calling `generateRaw()` inside a request event can re-enter runtime listeners. Use a dedicated server endpoint or a strict guard/marker.
 
+## Prompt And Variable Adapter APIs
+
+- `public/scripts/openai.js:85-97` exports `oai_settings` and the Chat Completion classes; the module
+  also exports the live `promptManager` binding at `public/scripts/openai.js:526`.
+- `public/scripts/PromptManager.js:1207-1209` exposes the active character prompt order.
+- `public/scripts/PromptManager.js:1257-1259` resolves a prompt by stable identifier.
+- `public/scripts/PromptManager.js:1516-1540` shows that enabled prompt order drives the collection
+  used for generation.
+- `public/scripts/variables.js:22` and `public/scripts/variables.js:83` export local/global variable
+  getters.
+- `public/scripts/variables.js:241-259` confirms legacy `setvar`, `getvar`, `setglobalvar`, and
+  `getglobalvar` semantics.
+
+Inference: the variable-COT adapter can use Prompt Manager identifiers and runtime variable values
+instead of guessing module identity from expanded Chinese text alone. The final ECoT body remains a
+second independent check before any request mutation.
+
 ## Official Documentation Copies
 
 - `references/official-docs/Writing-Extensions.md`

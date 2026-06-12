@@ -9,8 +9,9 @@ Repository: https://github.com/kdiss-001/yezi-reasoning-runtime
 ## Status
 
 This is an active development build. Protocol V2, request interception, planner proxying, validation,
-cancellation, and unchanged-request fallback are implemented and tested. The legacy preset adapter
-that extracts and atomically removes real COT modules is still under development.
+cancellation, unchanged-request fallback, and the first variable-COT preset adapter are implemented
+and tested. The adapter currently targets the verified regular COT builder used by the transferred
+Yezi preset; alternate COT builders and live SillyTavern execution still require verification.
 
 ## Install Frontend Extension
 
@@ -63,6 +64,11 @@ SillyTavern + memory/SP prompt assembly
 The planner may compile global memory, continuity, knowledge boundaries, character/relationship
 state, scene state, and cross-module consistency. It may not write dialogue, exact actions, plot
 beats, drafts, or final prose.
+
+For the verified Yezi variable-COT preset, the adapter reads the active Prompt Manager order, traces
+each `getvar` module to its last enabled setter, verifies the expanded ECoT against the runtime global
+`cot` value, removes the ECoT and dedicated assistant prefill on success, and reinjects writer-routed
+requirements separately.
 
 Start with:
 

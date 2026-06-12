@@ -13,16 +13,20 @@ Success criterion: one normal generation performs exactly one hidden planner cal
 
 ## Phase 2: Current Preset COT Adapter
 
-- Inspect the copied preset fixture.
-- Define stable markers for the current global COT payload.
-- Split mixed entries and assign protocol-v2 categories through explicit adapter rules.
-- Route planner/main/context modules without LLM classification.
-- Validate sourced evidence, constraint strength, coverage, request identity, and context hash.
-- Convert planner state into a compact main-model instruction.
-- Atomically remove only successfully externalized planner module ranges.
+- [x] Inspect the copied preset fixture.
+- [x] Define stable markers for the current global COT payload.
+- [x] Read active Prompt Manager order and trace `getvar` modules to their last enabled setter.
+- [x] Assign protocol-v2 categories through explicit adapter rules.
+- [x] Route planner/main modules without LLM classification.
+- [x] Verify the expanded ECoT body against the runtime global `cot` value.
+- [x] Remove the complete ECoT envelope and dedicated assistant COT prefill on a cloned request.
+- [x] Reinject writer-routed requirements separately from the planner packet.
+- [ ] Verify alternate minimal/self/custom COT builders and add explicit profiles where needed.
+- [ ] Capture a live normal-generation trace in SillyTavern.
 
-Success criterion: every enabled module is routed and covered, only planner modules are removed, and
-the main request retains writer-facing instructions without carrying the externalized global COT.
+Success criterion: every enabled module in the selected builder is routed and covered, the original
+ECoT is removed only after successful planning, and the main request retains writer-facing
+instructions without carrying the externalized global COT.
 
 ## Phase 3: Context And Memory Compatibility
 

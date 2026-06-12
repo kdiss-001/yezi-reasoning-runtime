@@ -6,7 +6,7 @@
     "js": "index.js",
     "css": "style.css",
     "author": "Yezi-Ku",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Runs one independent structured planning pass before a Chat Completion request.",
     "auto_update": true,
     "minimum_client_version": "1.18.0"

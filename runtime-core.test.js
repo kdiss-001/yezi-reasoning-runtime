@@ -4,8 +4,10 @@ import assert from 'node:assert/strict';
 import {
     PROTOCOL_VERSION,
     RUNTIME_MESSAGE_MARKER,
+    WRITER_DIRECTIVES_MARKER,
     buildPlannerJob,
     injectPlannerInstruction,
+    injectWriterDirectives,
     normalizeCotModules,
     validatePlannerEnvelope,
     validateSupportPacket,
@@ -182,4 +184,14 @@ test('injectPlannerInstruction inserts sourced packet before assistant prefill',
     assert.match(messages[1].content, /door state is not established/);
     assert.doesNotMatch(messages[1].content, /moduleCoverage/);
     assert.equal(messages[2].content, 'Prefill');
+});
+
+test('injectWriterDirectives preserves only main-routed modules', () => {
+    const messages = [{ role: 'user', content: 'Continue' }];
+    injectWriterDirectives(messages, makeModules());
+
+    assert.equal(messages.length, 2);
+    assert.match(messages[1].content, new RegExp(WRITER_DIRECTIVES_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(messages[1].content, /Use concise sensory prose/);
+    assert.doesNotMatch(messages[1].content, /Compile established continuity constraints/);
 });

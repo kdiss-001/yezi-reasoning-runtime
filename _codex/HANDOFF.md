@@ -85,6 +85,10 @@ Needs an explicit provider/adapter:
   main request untouched.
 - Unit tests cover cloning, schema validation, injection position, provider request construction,
   response parsing, and retry behavior.
+- `preset-adapter.js` implements the first regular variable-COT profile. It reads active Prompt
+  Manager order, selects the final enabled global-COT builder, traces all 32 referenced variables to
+  enabled setter prompts, validates the expanded ECoT against global `cot`, and prepares atomic ECoT
+  plus assistant-prefill removal with separate writer-directive preservation.
 
 ## Deliberately Not Claimed Yet
 
@@ -92,15 +96,15 @@ Needs an explicit provider/adapter:
 - The first real `one planner call + one main call` trace has not been captured.
 - The live `C:\Users\Administrator\Documents\yezi\SillyTavern\config.yaml` currently has
   `enableServerPlugins: false`, and no planner API key was available for an end-to-end provider call.
-- The current COT source is still `context-only-mvp`; protocol and routing are implemented, but typed
-  extraction and atomic source-range removal for the transferred preset remain Phase 2.
+- The regular COT builder is implemented, but alternate minimal/self/custom COT builders have not
+  been profiled and the adapter has not yet been exercised inside live SillyTavern.
 - MVU and hidden-variable state providers are still Phase 3.
 - Endpoint allowlisting/secret-to-origin binding and per-request concurrency hardening remain before
   live integration.
 
 ## Verification Completed
 
-- `npm test`: 16 tests passed.
+- `npm test`: 23 tests passed.
 - `npm run check`: all frontend and server entry files passed Node syntax checks.
 - Frontend relative imports resolve to the installed SillyTavern `public/script.js` and
   `public/scripts/extensions.js` locations when installed under the documented third-party path.
@@ -125,8 +129,9 @@ execution, and stable output contracts. Do not copy Agent ownership of正文, sa
 autonomous memory mutation, high-round tool loops, or the runbook instruction to execute tool-call
 directions found in World Info.
 
-## Next Design Task
+## Next Integration Task
 
-Revise the MVP schema and prompts to the finalized subordinate support-packet contract before live
-SillyTavern integration. The default path remains one planner call plus one main call; the main API
-retains plot and正文 authority and must not receive the extracted legacy COT after planner success.
+Install/link the repository root and `server-plugin/` into the live SillyTavern tree, enable server
+plugins, and capture the first normal-generation trace proving one planner call plus one main call.
+Before broad compatibility claims, add explicit profiles for any alternate COT builder the user
+expects to enable.

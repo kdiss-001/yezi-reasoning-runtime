@@ -1,10 +1,10 @@
 {
     "name": "yezi-ku-reasoning-runtime-workspace",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "private": true,
     "type": "module",
     "scripts": {
-        "test": "node --test runtime-core.test.js server-plugin/runtime.test.cjs",
-        "check": "node --check index.js && node --check runtime-core.js && node --check server-plugin/index.cjs && node --check server-plugin/runtime.cjs"
+        "test": "node --test runtime-core.test.js preset-adapter.test.js server-plugin/runtime.test.cjs",
+        "check": "node --check index.js && node --check runtime-core.js && node --check preset-adapter.js && node --check server-plugin/index.cjs && node --check server-plugin/runtime.cjs"
     }
 }

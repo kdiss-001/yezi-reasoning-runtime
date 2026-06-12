@@ -8,11 +8,15 @@ import {
     extension_settings,
     renderExtensionTemplateAsync,
 } from '../../../extensions.js';
+import { promptManager } from '../../../openai.js';
+import { getGlobalVariable, getLocalVariable } from '../../../variables.js';
 import {
     buildPlannerJob,
     injectPlannerInstruction,
+    injectWriterDirectives,
     validatePlannerEnvelope,
 } from './runtime-core.js';
+import { adaptYeziPresetRequest, removeAdaptedCot } from './preset-adapter.js';
 
 const MODULE_NAME = 'yezi_reasoning_runtime';
 const EXTENSION_PATH = 'third-party/yezi-reasoning-runtime';
@@ -158,12 +162,36 @@ async function interceptChatCompletion(generateData) {
     activeController = new AbortController();
 
     try {
-        const job = buildPlannerJob(generateData);
+        const promptOrder = promptManager?.getPromptOrderForCharacter?.(promptManager.activeCharacter) ?? [];
+        const prompts = promptManager?.serviceSettings?.prompts ?? [];
+        const adaptation = adaptYeziPresetRequest({
+            messages: generateData.messages,
+            prompts,
+            promptOrder: promptOrder.filter(entry => {
+                const prompt = promptManager?.getPromptById?.(entry.identifier);
+                return entry.enabled === true && promptManager?.shouldTrigger?.(prompt, generateData.type ?? 'normal') !== false;
+            }),
+            getLocalVariable,
+            getGlobalVariable,
+        });
+        if (!adaptation) {
+            setStatus('No supported variable-COT preset detected; original request preserved.', 'warning');
+            return;
+        }
+
+        const job = buildPlannerJob(generateData, {
+            cotSource: adaptation.source,
+            modules: adaptation.modules,
+            contextMessages: adaptation.plannerMessages,
+        });
         setStatus(`Planning ${job.requestId.slice(0, 8)}...`);
         const plan = await requestPlan(job, settings, activeController.signal);
 
-        // The live request is mutated only after a complete, validated response.
-        injectPlannerInstruction(generateData.messages, plan, job);
+        // Build the entire success transformation on a clone, then commit it atomically.
+        const transformedMessages = removeAdaptedCot(generateData.messages, adaptation);
+        injectWriterDirectives(transformedMessages, adaptation.modules);
+        injectPlannerInstruction(transformedMessages, plan, job);
+        generateData.messages.splice(0, generateData.messages.length, ...transformedMessages);
         setStatus(`Planner completed for ${job.requestId.slice(0, 8)}.`, 'ok');
     } catch (error) {
         if (error.name === 'AbortError') {

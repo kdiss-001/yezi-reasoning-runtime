@@ -1,5 +1,6 @@
 export const PROTOCOL_VERSION = 2;
 export const RUNTIME_MESSAGE_MARKER = '[yezi-reasoning-runtime:v2]';
+export const WRITER_DIRECTIVES_MARKER = '[yezi-writer-directives:v1]';
 
 export const MODULE_CATEGORY_ROUTES = Object.freeze({
     'global-memory': 'planner',
@@ -183,7 +184,7 @@ export function computeContextHash(job) {
 }
 
 export function buildPlannerJob(generateData, runtimeInput = {}) {
-    const messages = cloneMessages(generateData.messages);
+    const messages = cloneMessages(runtimeInput.contextMessages ?? generateData.messages);
     const modules = normalizeCotModules(runtimeInput.modules ?? []);
     const stateProviders = structuredClone(runtimeInput.stateProviders ?? {});
     assertPlainObject(stateProviders, 'State providers');
@@ -404,5 +405,41 @@ export function injectPlannerInstruction(messages, packet, job) {
     const insertionIndex = lastMessage?.role === 'assistant' ? messages.length - 1 : messages.length;
     messages.splice(insertionIndex, 0, injection);
 
+    return injection;
+}
+
+export function injectWriterDirectives(messages, modules) {
+    if (!Array.isArray(messages)) {
+        throw new TypeError('Live request messages must be an array.');
+    }
+    const normalizedModules = normalizeCotModules(modules);
+    const directives = normalizedModules
+        .filter(module => module.route === 'main')
+        .map(module => ({
+            id: module.id,
+            label: module.label,
+            category: module.category,
+            instruction: module.instruction,
+        }));
+
+    for (let index = messages.length - 1; index >= 0; index -= 1) {
+        const content = messages[index]?.content;
+        if (typeof content === 'string' && content.startsWith(WRITER_DIRECTIVES_MARKER)) {
+            messages.splice(index, 1);
+        }
+    }
+    if (!directives.length) return null;
+
+    const injection = {
+        role: 'system',
+        content: [
+            WRITER_DIRECTIVES_MARKER,
+            'Direct writer requirements preserved from the externalized ECoT. Apply them while retaining control of plot and prose. Do not quote or mention this block.',
+            JSON.stringify(directives),
+        ].join('\n'),
+    };
+    const lastMessage = messages.at(-1);
+    const insertionIndex = lastMessage?.role === 'assistant' ? messages.length - 1 : messages.length;
+    messages.splice(insertionIndex, 0, injection);
     return injection;
 }

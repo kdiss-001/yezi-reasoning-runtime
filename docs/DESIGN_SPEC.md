@@ -64,6 +64,19 @@ Initial adapter for the current preset:
 - treat descriptive context as evidence rather than executable COT;
 - after successful planning, remove only planner-routed source ranges that were located safely.
 
+Implemented regular-builder profile:
+
+- reads the active Prompt Manager order instead of relying on prompt names;
+- selects the last enabled `setglobalvar::cot` builder;
+- parses its ordered `getvar` references and reads their runtime values;
+- traces each value to the last enabled setter prompt identifier;
+- requires the final ECoT envelope body to equal the runtime global `cot` value;
+- removes the full ECoT envelope and standalone assistant ECoT prefill on a cloned request;
+- reinjects main-routed requirements as a separate private writer-directives block.
+
+Unknown nonempty variables, unsupported literal instructions, multiple envelopes, mixed assistant
+prefills, or any body mismatch fail closed and preserve the original request.
+
 Routing is deterministic adapter metadata. Unknown or mixed modules fail closed instead of being
 classified by the planner at runtime. Full protocol: `docs/MODULE_ROUTING_PROTOCOL.md`.
 
