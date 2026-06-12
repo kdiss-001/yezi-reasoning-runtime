@@ -106,7 +106,7 @@ Needs an explicit provider/adapter:
   `public/scripts/extensions.js` locations when installed under the documented third-party path.
 - The CommonJS server plugin export is visible through SillyTavern's dynamic-import loading shape.
 - JSON manifests parse successfully and the workspace contains no key-like `sk-...` token.
-- Public repository target: `https://github.com/kdiss-001/yezi-reasoning-runtime`. The root layout is
+- Public repository: `https://github.com/kdiss-001/yezi-reasoning-runtime`. The root layout is
   directly installable as a SillyTavern frontend extension. Third-party presets and `references/`
   research copies remain local and ignored.
 

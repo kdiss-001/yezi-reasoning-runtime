@@ -3,6 +3,7 @@
 ## Project
 
 - Workspace: `C:\Users\Administrator\Documents\yezi-ku`
+- Repository: `https://github.com/kdiss-001/yezi-reasoning-runtime`
 - Purpose: implement a SillyTavern Reasoning Runtime using a separately configured planner API.
 - Current status: installable GitHub repository layout plus Phase 1 extension/server-plugin scaffold;
   live integration not yet run.
