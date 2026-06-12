@@ -5,8 +5,8 @@
 - Workspace: `C:\Users\Administrator\Documents\yezi-ku`
 - Repository: `https://github.com/kdiss-001/yezi-reasoning-runtime`
 - Purpose: implement a SillyTavern Reasoning Runtime using a separately configured planner API.
-- Current status: installable GitHub repository, Protocol V2 runtime, and first regular variable-COT
-  preset adapter implemented; live integration not yet run.
+- Current status: installable GitHub repository, Protocol V2 runtime, first regular variable-COT
+  preset adapter implemented, and frontend/server-plugin loading verified in live SillyTavern.
 - Scoped global skill: `C:\Users\Administrator\.codex\skills\yezi-ku-reasoning-runtime\SKILL.md`
 - Project-local skill backup: `_codex\skill-gate\yezi-ku-reasoning-runtime\SKILL.md`
 
@@ -59,8 +59,9 @@ validation, cancellation, and unchanged-request fallback.
 
 The regular Yezi variable-COT adapter now reads Prompt Manager order, routes all 32 referenced
 variables, verifies the final ECoT against global `cot`, removes the ECoT plus standalone assistant
-prefill on success, and preserves main-routed writer directives. Alternate COT builder profiles and a
-live trace remain.
+prefill on success, and preserves main-routed writer directives. Live SillyTavern `1.18.0` now loads
+both linked packages and reports the expected unconfigured-key status. Alternate COT builder profiles
+and a provider-backed generation trace remain.
 
-Next verification: install/link both packages into the live SillyTavern `1.18.0` tree, configure a
-temporary planner key through the process environment, and prove one planner call plus one main call.
+Next verification: configure a temporary planner key through the process environment and prove one
+planner call plus one main call.

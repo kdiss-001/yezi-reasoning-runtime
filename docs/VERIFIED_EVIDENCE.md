@@ -54,6 +54,25 @@ Inference: the variable-COT adapter can use Prompt Manager identifiers and runti
 instead of guessing module identity from expanded Chinese text alone. The final ECoT body remains a
 second independent check before any request mutation.
 
+## Live Extension And Plugin Loading
+
+Verified on June 12, 2026 against live SillyTavern `1.18.0` (`release`, commit `51ad27fb8`):
+
+- The repository root was linked to
+  `public/scripts/extensions/third-party/yezi-reasoning-runtime`.
+- `server-plugin/` was linked to `plugins/yezi-reasoning-runtime` and server plugins were enabled in
+  the local SillyTavern configuration.
+- `GET /api/plugins/yezi-reasoning-runtime/status` returned HTTP 200, version `0.2.0`, and
+  `configured: false` because no planner key was supplied.
+- SillyTavern served the frontend manifest from the third-party extension path.
+- In the initialized browser UI, `#yrr_settings` and `#yrr_status` existed; the visible status text
+  was `Server plugin loaded; set SILLYTAVERN_REASONING_RUNTIME_API_KEY`.
+- Browser console inspection showed no error attributable to Yezi Reasoning Runtime.
+
+Inference: installation paths, frontend imports, extension initialization, server-plugin discovery,
+and frontend-to-plugin status communication are working in the installed version. This does not yet
+prove a planner request or the one-planner-plus-one-main generation invariant.
+
 ## Official Documentation Copies
 
 - `references/official-docs/Writing-Extensions.md`

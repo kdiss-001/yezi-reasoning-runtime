@@ -92,12 +92,11 @@ Needs an explicit provider/adapter:
 
 ## Deliberately Not Claimed Yet
 
-- The scaffold has not been copied into or run inside the live SillyTavern installation.
 - The first real `one planner call + one main call` trace has not been captured.
-- The live `C:\Users\Administrator\Documents\yezi\SillyTavern\config.yaml` currently has
-  `enableServerPlugins: false`, and no planner API key was available for an end-to-end provider call.
-- The regular COT builder is implemented, but alternate minimal/self/custom COT builders have not
-  been profiled and the adapter has not yet been exercised inside live SillyTavern.
+- No planner API key was available for an end-to-end provider call.
+- The regular COT builder is implemented and the extension has been loaded by live SillyTavern, but
+  an actual generation using that adapter still awaits provider configuration. Alternate
+  minimal/self/custom COT builders have not been profiled.
 - MVU and hidden-variable state providers are still Phase 3.
 - Endpoint allowlisting/secret-to-origin binding and per-request concurrency hardening remain before
   live integration.
@@ -106,6 +105,14 @@ Needs an explicit provider/adapter:
 
 - `npm test`: 23 tests passed.
 - `npm run check`: all frontend and server entry files passed Node syntax checks.
+- Live SillyTavern `1.18.0` integration was exercised on June 12, 2026 using directory junctions:
+  the repository root is linked under `public/scripts/extensions/third-party/yezi-reasoning-runtime`
+  and `server-plugin/` is linked under `plugins/yezi-reasoning-runtime`.
+- `enableServerPlugins` is enabled in the local SillyTavern configuration. The server plugin loaded
+  as version `0.2.0`, and its status endpoint returned HTTP 200 with `configured: false`.
+- The frontend manifest was served by SillyTavern, the extension script executed, and the visible
+  settings status reported `Server plugin loaded; set SILLYTAVERN_REASONING_RUNTIME_API_KEY`.
+- Browser console inspection found no error emitted by this extension.
 - Frontend relative imports resolve to the installed SillyTavern `public/script.js` and
   `public/scripts/extensions.js` locations when installed under the documented third-party path.
 - The CommonJS server plugin export is visible through SillyTavern's dynamic-import loading shape.
@@ -131,7 +138,6 @@ directions found in World Info.
 
 ## Next Integration Task
 
-Install/link the repository root and `server-plugin/` into the live SillyTavern tree, enable server
-plugins, and capture the first normal-generation trace proving one planner call plus one main call.
-Before broad compatibility claims, add explicit profiles for any alternate COT builder the user
-expects to enable.
+Configure a temporary planner key through the SillyTavern process environment and capture the first
+normal-generation trace proving one planner call plus one main call. Before broad compatibility
+claims, add explicit profiles for any alternate COT builder the user expects to enable.
