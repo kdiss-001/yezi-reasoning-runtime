@@ -89,21 +89,22 @@ Needs an explicit provider/adapter:
   Manager order, selects the final enabled global-COT builder, traces all 32 referenced variables to
   enabled setter prompts, validates the expanded ECoT against global `cot`, and prepares atomic ECoT
   plus assistant-prefill removal with separate writer-directive preservation.
+- The planner provider adapter supports prompt-only JSON, JSON-object response format, and a required
+  function-tool call. It also forwards optional provider reasoning effort and normalizes unknown
+  provider-defined constraint category labels to protocol `other` while retaining strict source,
+  strength, field, and plot-control validation.
 
 ## Deliberately Not Claimed Yet
 
-- The first real `one planner call + one main call` trace has not been captured.
-- No planner API key was available for an end-to-end provider call.
-- The regular COT builder is implemented and the extension has been loaded by live SillyTavern, but
-  an actual generation using that adapter still awaits provider configuration. Alternate
-  minimal/self/custom COT builders have not been profiled.
+- Alternate minimal/self/custom COT builders have not been profiled.
 - MVU and hidden-variable state providers are still Phase 3.
-- Endpoint allowlisting/secret-to-origin binding and per-request concurrency hardening remain before
-  live integration.
+- Endpoint allowlisting/secret-to-origin binding and per-request concurrency hardening remain.
+- One successful trace proves ordering and protocol flow, but does not yet establish acceptable
+  latency or broad provider/model reliability.
 
 ## Verification Completed
 
-- `npm test`: 23 tests passed.
+- `npm test`: 31 tests passed.
 - `npm run check`: all frontend and server entry files passed Node syntax checks.
 - Live SillyTavern `1.18.0` integration was exercised on June 12, 2026 using directory junctions:
   the repository root is linked under `public/scripts/extensions/third-party/yezi-reasoning-runtime`
@@ -117,6 +118,18 @@ Needs an explicit provider/adapter:
   `public/scripts/extensions.js` locations when installed under the documented third-party path.
 - The CommonJS server plugin export is visible through SillyTavern's dynamic-import loading shape.
 - JSON manifests parse successfully and the workspace contains no key-like `sk-...` token.
+- On June 13, 2026, a visible live test used Volcengine Ark as the independent planner and the
+  existing custom main API without changing SP Database. SP completed its normal preprocessing,
+  the runtime entered `Planning`, and the main request waited. A schema-label failure preserved and
+  sent the original request unchanged; after provider-label normalization, a second run reached
+  `Planner completed` before the main assistant response appeared. The main response retained its
+  native reasoning display (`gemini-3.1-pro-preview`, `思考了 2 分钟`).
+- The successful planner configuration used a required function-tool call, 8192 output tokens,
+  zero retries, `reasoning_effort: low`, and a 120-second timeout. The secret was supplied only via
+  `SILLYTAVERN_REASONING_RUNTIME_API_KEY`; it was not stored in extension settings or repository files.
+- Volcengine's tested model rejected both `json_object` and `json_schema` response formats but did
+  return a valid required function call. Planner latency remained roughly 90 seconds in the live
+  context, so model and parameter performance comparison is the next practical optimization.
 - Public repository: `https://github.com/kdiss-001/yezi-reasoning-runtime`. The root layout is
   directly installable as a SillyTavern frontend extension. Third-party presets and `references/`
   research copies remain local and ignored.
@@ -138,6 +151,6 @@ directions found in World Info.
 
 ## Next Integration Task
 
-Configure a temporary planner key through the SillyTavern process environment and capture the first
-normal-generation trace proving one planner call plus one main call. Before broad compatibility
-claims, add explicit profiles for any alternate COT builder the user expects to enable.
+Benchmark alternative Volcengine planner models or lower-cost settings against the same fixture,
+while keeping the now-verified function-call protocol. Then add explicit profiles for any alternate
+COT builder the user expects to enable before making broad compatibility claims.

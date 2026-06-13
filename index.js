@@ -31,7 +31,8 @@ const DEFAULT_SETTINGS = Object.freeze({
     temperature: 0.2,
     timeoutMs: 45000,
     retryCount: 1,
-    structuredOutput: true,
+    structuredOutputMode: 'json_object',
+    reasoningEffort: '',
 });
 
 let activeController = null;
@@ -43,6 +44,9 @@ function getSettings() {
     }
 
     const settings = extension_settings[MODULE_NAME];
+    if (!Object.hasOwn(settings, 'structuredOutputMode')) {
+        settings.structuredOutputMode = settings.structuredOutput === false ? 'none' : 'json_object';
+    }
     for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
         if (!Object.hasOwn(settings, key)) {
             settings[key] = value;
@@ -69,7 +73,8 @@ function updateSettingsFromUi() {
     settings.temperature = Number(document.querySelector('#yrr_temperature')?.value) || 0;
     settings.timeoutMs = Number(document.querySelector('#yrr_timeout_ms')?.value) || DEFAULT_SETTINGS.timeoutMs;
     settings.retryCount = Number(document.querySelector('#yrr_retry_count')?.value) || 0;
-    settings.structuredOutput = document.querySelector('#yrr_structured_output')?.checked ?? false;
+    settings.structuredOutputMode = document.querySelector('#yrr_structured_output_mode')?.value ?? 'none';
+    settings.reasoningEffort = document.querySelector('#yrr_reasoning_effort')?.value ?? '';
     saveSettingsDebounced();
 }
 
@@ -83,7 +88,8 @@ function loadSettingsIntoUi() {
         '#yrr_temperature': settings.temperature,
         '#yrr_timeout_ms': settings.timeoutMs,
         '#yrr_retry_count': settings.retryCount,
-        '#yrr_structured_output': settings.structuredOutput,
+        '#yrr_structured_output_mode': settings.structuredOutputMode,
+        '#yrr_reasoning_effort': settings.reasoningEffort,
     };
 
     for (const [selector, value] of Object.entries(values)) {
@@ -134,7 +140,8 @@ async function requestPlan(job, settings, signal) {
                 temperature: settings.temperature,
                 timeoutMs: settings.timeoutMs,
                 retryCount: settings.retryCount,
-                structuredOutput: settings.structuredOutput,
+                structuredOutputMode: settings.structuredOutputMode,
+                reasoningEffort: settings.reasoningEffort,
             },
         }),
     });

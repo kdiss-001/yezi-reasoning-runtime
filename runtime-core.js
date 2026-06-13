@@ -43,10 +43,16 @@ const EVIDENCE_KINDS = new Set([
     'scene-state',
 ]);
 const CONSTRAINT_KINDS = new Set([
+    'global-memory',
     'continuity',
+    'knowledge-boundary',
     'character',
+    'character-state',
     'relationship',
+    'relationship-state',
     'scene',
+    'scene-state',
+    'cross-module-consistency',
     'safety',
     'other',
 ]);

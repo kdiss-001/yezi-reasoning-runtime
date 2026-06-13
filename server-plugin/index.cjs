@@ -41,7 +41,7 @@ function publicErrorMessage(error) {
 async function init(router) {
     router.get('/status', (_request, response) => {
         response.json({
-            version: '0.2.0',
+            version: '0.2.1',
             configured: Boolean(process.env[API_KEY_ENV]?.trim()),
             secretSource: API_KEY_ENV,
         });

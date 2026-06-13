@@ -120,6 +120,20 @@ test('validateSupportPacket accepts sourced evidence and constraints', () => {
     assert.deepEqual(validateSupportPacket(packet, job), packet);
 });
 
+test('validateSupportPacket accepts planner-category constraint kinds', () => {
+    const job = makeJob();
+    const packet = makePacket(job, {
+        constraints: [{
+            id: 'constraint-category-1',
+            kind: 'knowledge-boundary',
+            text: 'Do not grant a character knowledge without a sourced observation.',
+            sourceRefs: ['module:continuity-1'],
+            strength: 'hard',
+        }],
+    });
+    assert.deepEqual(validateSupportPacket(packet, job), packet);
+});
+
 test('validateSupportPacket rejects incomplete module coverage', () => {
     const job = makeJob();
     const packet = makePacket(job);

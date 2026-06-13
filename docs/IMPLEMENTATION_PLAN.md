@@ -11,6 +11,9 @@
 
 Success criterion: one normal generation performs exactly one hidden planner call and one main call; the hidden call does not appear in chat or native reasoning display.
 
+Status: verified once in visible live SillyTavern on June 13, 2026 using a required function-tool
+planner call. Failure fallback and native main reasoning display were also observed.
+
 ## Phase 2: Current Preset COT Adapter
 
 - [x] Inspect the copied preset fixture.
@@ -22,7 +25,7 @@ Success criterion: one normal generation performs exactly one hidden planner cal
 - [x] Remove the complete ECoT envelope and dedicated assistant COT prefill on a cloned request.
 - [x] Reinject writer-routed requirements separately from the planner packet.
 - [ ] Verify alternate minimal/self/custom COT builders and add explicit profiles where needed.
-- [ ] Capture a live normal-generation trace in SillyTavern.
+- [x] Capture a live normal-generation trace in SillyTavern.
 
 Success criterion: every enabled module in the selected builder is routed and covered, the original
 ECoT is removed only after successful planning, and the main request retains writer-facing
@@ -43,6 +46,7 @@ Success criterion: planner decisions reflect both recalled memory text and selec
 - Add optional execution-summary panel.
 - Add request fingerprinting and safe cache invalidation for swipe/regenerate.
 - Add provider/model capability checks and graceful non-schema fallback.
+- Benchmark planner model and parameter latency using the same full-context fixture.
 - Test streaming, cancellation, group chats, impersonation, continue, swipe, regenerate, and quiet generations.
 
 ## Phase 5: Optional Deep Mode

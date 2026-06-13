@@ -31,10 +31,20 @@
                 </label>
             </div>
 
-            <label class="checkbox_label" for="yrr_structured_output">
-                <input id="yrr_structured_output" type="checkbox">
-                <span>Request JSON object mode from the planner provider</span>
-            </label>
+            <label for="yrr_structured_output_mode">Structured output mode</label>
+            <select id="yrr_structured_output_mode" class="text_pole">
+                <option value="none">Prompt-only JSON</option>
+                <option value="json_object">JSON object response format</option>
+                <option value="tool_call">Required function tool call</option>
+            </select>
+
+            <label for="yrr_reasoning_effort">Provider reasoning effort</label>
+            <select id="yrr_reasoning_effort" class="text_pole">
+                <option value="">Provider default</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
 
             <div class="yrr_status_row">
                 <button id="yrr_check_plugin" class="menu_button" type="button">Check server plugin</button>

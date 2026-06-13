@@ -6,7 +6,7 @@
 - Repository: `https://github.com/kdiss-001/yezi-reasoning-runtime`
 - Purpose: implement a SillyTavern Reasoning Runtime using a separately configured planner API.
 - Current status: installable GitHub repository, Protocol V2 runtime, first regular variable-COT
-  preset adapter implemented, and frontend/server-plugin loading verified in live SillyTavern.
+  preset adapter implemented, and a provider-backed planner-to-main trace verified in live SillyTavern.
 - Scoped global skill: `C:\Users\Administrator\.codex\skills\yezi-ku-reasoning-runtime\SKILL.md`
 - Project-local skill backup: `_codex\skill-gate\yezi-ku-reasoning-runtime\SKILL.md`
 
@@ -59,9 +59,10 @@ validation, cancellation, and unchanged-request fallback.
 
 The regular Yezi variable-COT adapter now reads Prompt Manager order, routes all 32 referenced
 variables, verifies the final ECoT against global `cot`, removes the ECoT plus standalone assistant
-prefill on success, and preserves main-routed writer directives. Live SillyTavern `1.18.0` now loads
-both linked packages and reports the expected unconfigured-key status. Alternate COT builder profiles
-and a provider-backed generation trace remain.
+prefill on success, and preserves main-routed writer directives. Live SillyTavern `1.18.0` loads both
+linked packages. On June 13, 2026, a visible Volcengine required-tool-call planner run completed before
+the existing main API produced正文, with SP Database left unchanged and native main reasoning display
+preserved. Alternate COT builder profiles and planner latency optimization remain.
 
-Next verification: configure a temporary planner key through the process environment and prove one
-planner call plus one main call.
+Next verification: compare planner models/parameters on the same live fixture, then profile alternate
+minimal/self/custom COT builders.

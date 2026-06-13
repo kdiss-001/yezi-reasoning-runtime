@@ -59,7 +59,8 @@ function makeConfig(overrides = {}) {
         temperature: 0.2,
         timeoutMs: 5000,
         retryCount: 0,
-        structuredOutput: true,
+        structuredOutputMode: 'json_object',
+        reasoningEffort: '',
         ...overrides,
     };
 }
@@ -109,10 +110,68 @@ test('parsePlannerContent accepts a fenced sourced support packet', () => {
     assert.deepEqual(parsePlannerContent(`\`\`\`json\n${JSON.stringify(packet)}\n\`\`\``, job), packet);
 });
 
+test('parsePlannerContent extracts a complete JSON object from provider commentary', () => {
+    const job = makeJob();
+    const packet = makePacket();
+    const content = `Compiled result follows.\n${JSON.stringify(packet)}\nEnd of result.`;
+    assert.deepEqual(parsePlannerContent(content, job), packet);
+});
+
 test('parsePlannerContent rejects plot-control fields', () => {
     const job = makeJob();
     const packet = { ...makePacket(), plannedActions: ['Choose the next plot beat.'] };
     assert.throws(() => parsePlannerContent(JSON.stringify(packet), job), /invalid support packet/);
+});
+
+test('parsePlannerContent accepts planner-category constraint kinds', () => {
+    const job = makeJob();
+    const packet = makePacket({
+        constraints: [{
+            id: 'constraint-category-1',
+            kind: 'cross-module-consistency',
+            text: 'Reconcile global constraints without choosing a plot beat.',
+            sourceRefs: ['module:continuity-1'],
+            strength: 'soft',
+        }],
+    });
+    assert.deepEqual(parsePlannerContent(JSON.stringify(packet), job), packet);
+});
+
+test('parsePlannerContent normalizes provider-defined constraint kinds', () => {
+    const job = makeJob();
+    const packet = makePacket({
+        constraints: [{
+            id: 'constraint-provider-kind-1',
+            kind: 'output-template',
+            text: 'Preserve the requested response presentation.',
+            sourceRefs: ['module:continuity-1'],
+            strength: 'hard',
+        }],
+    });
+    const parsed = parsePlannerContent(JSON.stringify(packet), job);
+    assert.equal(parsed.constraints[0].kind, 'other');
+});
+
+test('parsePlannerContent reports only short invalid constraint metadata', () => {
+    const job = makeJob();
+    const packet = makePacket({
+        constraints: [{
+            id: 'constraint-invalid-1',
+            kind: 'physical-rule',
+            text: 'Private constraint text must not appear in the diagnostic.',
+            sourceRefs: ['module:continuity-1'],
+            strength: 'mandatory',
+        }],
+    });
+    assert.throws(
+        () => parsePlannerContent(JSON.stringify(packet), job),
+        /kind=\\?"physical-rule\\?", strength=\\?"mandatory\\?"/,
+    );
+    try {
+        parsePlannerContent(JSON.stringify(packet), job);
+    } catch (error) {
+        assert.doesNotMatch(error.message, /Private constraint text/);
+    }
 });
 
 test('executePlanner sends routed modules and returns a bound envelope', async () => {
@@ -151,6 +210,51 @@ test('executePlanner sends routed modules and returns a bound envelope', async (
     assert.equal(result.meta.attempts, 1);
 });
 
+test('executePlanner forwards an optional provider reasoning effort', async () => {
+    let captured;
+    await executePlanner({
+        job: makeJob(),
+        config: makeConfig({ reasoningEffort: 'low' }),
+        apiKey: 'test-secret',
+        fetchImpl: async (_url, options) => {
+            captured = JSON.parse(options.body);
+            return providerResponse(makePacket());
+        },
+    });
+    assert.equal(captured.reasoning_effort, 'low');
+});
+
+test('executePlanner accepts a required support-packet tool call', async () => {
+    const packet = makePacket();
+    let captured;
+    const result = await executePlanner({
+        job: makeJob(),
+        config: makeConfig({ structuredOutputMode: 'tool_call' }),
+        apiKey: 'test-secret',
+        fetchImpl: async (_url, options) => {
+            captured = JSON.parse(options.body);
+            return new Response(JSON.stringify({
+                choices: [{
+                    finish_reason: 'tool_calls',
+                    message: {
+                        content: '',
+                        tool_calls: [{
+                            type: 'function',
+                            function: {
+                                name: 'submit_support_packet',
+                                arguments: JSON.stringify(packet),
+                            },
+                        }],
+                    },
+                }],
+            }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        },
+    });
+    assert.equal(captured.tool_choice.function.name, 'submit_support_packet');
+    assert.equal(captured.tools[0].function.parameters.additionalProperties, false);
+    assert.deepEqual(result.packet, packet);
+});
+
 test('executePlanner retries retryable provider failures', async () => {
     const job = makeJob();
     let attempts = 0;
@@ -171,6 +275,22 @@ test('executePlanner retries retryable provider failures', async () => {
 
     assert.equal(attempts, 2);
     assert.equal(result.meta.attempts, 2);
+});
+
+test('executePlanner reports provider output truncation without exposing content', async () => {
+    const fetchImpl = async () => new Response(JSON.stringify({
+        choices: [{ finish_reason: 'length', message: { content: '{"moduleCoverage":[' } }],
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+
+    await assert.rejects(
+        executePlanner({
+            job: makeJob(),
+            config: makeConfig(),
+            apiKey: 'test-secret',
+            fetchImpl,
+        }),
+        /output token limit.*Output characters: 19/,
+    );
 });
 
 test('executePlanner honors an already cancelled generation', async () => {

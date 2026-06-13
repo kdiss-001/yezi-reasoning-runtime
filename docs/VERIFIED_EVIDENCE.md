@@ -69,9 +69,34 @@ Verified on June 12, 2026 against live SillyTavern `1.18.0` (`release`, commit `
   was `Server plugin loaded; set SILLYTAVERN_REASONING_RUNTIME_API_KEY`.
 - Browser console inspection showed no error attributable to Yezi Reasoning Runtime.
 
-Inference: installation paths, frontend imports, extension initialization, server-plugin discovery,
-and frontend-to-plugin status communication are working in the installed version. This does not yet
-prove a planner request or the one-planner-plus-one-main generation invariant.
+Inference at this June 12 stage: installation paths, frontend imports, extension initialization,
+server-plugin discovery, and frontend-to-plugin status communication were working, but a planner
+request and the one-planner-plus-one-main invariant had not yet been tested.
+
+## Live Planner And Main Generation
+
+Verified on June 13, 2026 in the visible in-app browser against live SillyTavern `1.18.0`:
+
+- The independent planner used Volcengine Ark's OpenAI-compatible coding endpoint and model
+  `doubao-seed-2-0-pro-260215`; the existing main API remained `gemini-3.1-pro-preview`.
+- The planner secret was supplied only through `SILLYTAVERN_REASONING_RUNTIME_API_KEY`. Extension
+  settings stored endpoint, model, limits, and mode but no key or secret value.
+- Direct capability probes returned HTTP 400 for `json_object` and `json_schema` response formats,
+  while a required function-tool call returned HTTP 200 with parseable JSON arguments.
+- In the first visible full-context run, the status stayed at `Planning` and the main request waited.
+  The planner produced an unsupported category label, the runtime reported planner failure, preserved
+  the original request, and only then allowed the main response to run.
+- After normalizing unknown provider-defined constraint categories to protocol `other`, a second
+  visible run reached `Planner completed` before the assistant message finished.
+- The final assistant message was produced by the unchanged main model and retained SillyTavern's
+  native reasoning display (`思考了 2 分钟`). Planner output did not appear as a chat message.
+- SP Database and Prompt Template processing remained active and unmodified during both tests.
+- The successful planner call used required function-tool mode, `reasoning_effort: low`, 8192 output
+  tokens, no retry, and a 120-second timeout. Observed planner latency was roughly 90 seconds.
+
+Inference: the one-hidden-planner-before-one-main ordering, failure fallback, SP compatibility, and
+native main reasoning preservation are now proven for one real normal-generation path. Latency and
+reliability across other models, generation modes, and alternate COT builders remain unproven.
 
 ## Official Documentation Copies
 
